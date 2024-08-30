@@ -1,5 +1,1 @@
-﻿/*
- Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
- For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang("codesnippet","pt-br",{button:"Inserir fragmento de código",codeContents:"Conteúdo do código",emptySnippetError:"Um fragmento de código não pode ser vazio",language:"Idioma",title:"Fragmento de código",pathName:"fragmento de código"});
+﻿CKEDITOR.plugins.setLang("find","pt-br",{find:"Localizar",findOptions:"Opções",findWhat:"Procurar por:",matchCase:"Coincidir Maiúsculas/Minúsculas",matchCyclic:"Coincidir cíclico",matchWord:"Coincidir a palavra inteira",notFoundMsg:"O texto especificado não foi encontrado.",replace:"Substituir",replaceAll:"Substituir Tudo",replaceSuccessMsg:"%1 ocorrência(s) substituída(s).",replaceWith:"Substituir por:",title:"Localizar e Substituir"});

@@ -1,5 +1,1 @@
-﻿/*
- Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
- For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang("codesnippet","eu",{button:"Txertatu kode zatia",codeContents:"Kode edukia",emptySnippetError:"Kode zatiak ezin du hutsik egon.",language:"Lengoaia",title:"Kode zatia",pathName:"kode zatia"});
+﻿CKEDITOR.plugins.setLang("find","eu",{find:"Bilatu",findOptions:"Bilaketaren aukerak",findWhat:"Bilatu hau:",matchCase:"Maiuskula/minuskula",matchCyclic:"Bilaketa ziklikoa",matchWord:"Bilatu hitz osoa",notFoundMsg:"Ez da aurkitu zehazturiko testua.",replace:"Ordezkatu",replaceAll:"Ordezkatu guztiak",replaceSuccessMsg:"%1 aldiz ordezkatua.",replaceWith:"Ordezkatu honekin:",title:"Bilatu eta ordezkatu"});

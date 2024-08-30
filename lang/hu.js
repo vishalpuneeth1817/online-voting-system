@@ -1,5 +1,1 @@
-﻿/*
- Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
- For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang("codesnippet","hu",{button:"Illeszd be a kódtöredéket",codeContents:"Kód tartalom",emptySnippetError:"A kódtöredék nem lehet üres.",language:"Nyelv",title:"Kódtöredék",pathName:"kódtöredék"});
+﻿CKEDITOR.plugins.setLang("find","hu",{find:"Keresés",findOptions:"Beállítások",findWhat:"Keresett szöveg:",matchCase:"Kis- és nagybetű megkülönböztetése",matchCyclic:"Ciklikus keresés",matchWord:"Csak ha ez a teljes szó",notFoundMsg:"A keresett szöveg nem található.",replace:"Csere",replaceAll:"Az összes cseréje",replaceSuccessMsg:"%1 egyezőség cserélve.",replaceWith:"Csere erre:",title:"Keresés és csere"});

@@ -1,5 +1,1 @@
-﻿/*
- Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
- For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang("codesnippet","he",{button:"הכנס קטע קוד",codeContents:"תוכן קוד",emptySnippetError:"קטע קוד לא יכול להיות ריק.",language:"שפה",title:"קטע קוד",pathName:"code snippet"});
+﻿CKEDITOR.plugins.setLang("find","he",{find:"חיפוש",findOptions:"אפשרויות חיפוש",findWhat:"חיפוש מחרוזת:",matchCase:"הבחנה בין אותיות רשיות לקטנות (Case)",matchCyclic:"התאמה מחזורית",matchWord:"התאמה למילה המלאה",notFoundMsg:"הטקסט המבוקש לא נמצא.",replace:"החלפה",replaceAll:"החלפה בכל העמוד",replaceSuccessMsg:"%1 טקסטים הוחלפו.",replaceWith:"החלפה במחרוזת:",title:"חיפוש והחלפה"});

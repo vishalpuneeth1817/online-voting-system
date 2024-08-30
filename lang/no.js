@@ -1,5 +1,1 @@
-﻿/*
- Copyright (c) 2003-2017, CKSource - Frederico Knabben. All rights reserved.
- For licensing, see LICENSE.md or http://ckeditor.com/license
-*/
-CKEDITOR.plugins.setLang("codesnippet","no",{button:"Sett inn kodesnutt",codeContents:"Code content",emptySnippetError:"A code snippet cannot be empty.",language:"Language",title:"Code snippet",pathName:"code snippet"});
+﻿CKEDITOR.plugins.setLang("find","no",{find:"Søk",findOptions:"Søkealternativer",findWhat:"Søk etter:",matchCase:"Skill mellom store og små bokstaver",matchCyclic:"Søk i hele dokumentet",matchWord:"Bare hele ord",notFoundMsg:"Fant ikke søketeksten.",replace:"Erstatt",replaceAll:"Erstatt alle",replaceSuccessMsg:"%1 tilfelle(r) erstattet.",replaceWith:"Erstatt med:",title:"Søk og erstatt"});
