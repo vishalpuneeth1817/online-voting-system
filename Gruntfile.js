@@ -1,511 +1,261 @@
-/*!
- * Bootstrap's Gruntfile
- * http://getbootstrap.com
- * Copyright 2013-2016 Twitter, Inc.
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
- */
+module.exports = function(grunt){
+    'use strict';
 
-module.exports = function (grunt) {
-  'use strict';
+    // Force use of Unix newlines
+    grunt.util.linefeed = '\n';
 
-  // Force use of Unix newlines
-  grunt.util.linefeed = '\n';
+    // Project configuration.
+    grunt.initConfig({
+        //Metadata
+        pkg: grunt.file.readJSON('package.json'),
+        banner: [
+            '/*!',
+            ' * Datepicker for Bootstrap v<%= pkg.version %> (<%= pkg.homepage %>)',
+            ' *',
+            ' * Licensed under the Apache License v2.0 (http://www.apache.org/licenses/LICENSE-2.0)',
+            ' */'
+        ].join('\n') + '\n',
 
-  RegExp.quote = function (string) {
-    return string.replace(/[-\\^$*+?.()|[\]{}]/g, '\\$&');
-  };
-
-  var fs = require('fs');
-  var path = require('path');
-  var generateGlyphiconsData = require('./grunt/bs-glyphicons-data-generator.js');
-  var BsLessdocParser = require('./grunt/bs-lessdoc-parser.js');
-  var getLessVarsData = function () {
-    var filePath = path.join(__dirname, 'less/variables.less');
-    var fileContent = fs.readFileSync(filePath, { encoding: 'utf8' });
-    var parser = new BsLessdocParser(fileContent);
-    return { sections: parser.parseFile() };
-  };
-  var generateRawFiles = require('./grunt/bs-raw-files-generator.js');
-  var generateCommonJSModule = require('./grunt/bs-commonjs-generator.js');
-  var configBridge = grunt.file.readJSON('./grunt/configBridge.json', { encoding: 'utf8' });
-
-  Object.keys(configBridge.paths).forEach(function (key) {
-    configBridge.paths[key].forEach(function (val, i, arr) {
-      arr[i] = path.join('./docs/assets', val);
-    });
-  });
-
-  // Project configuration.
-  grunt.initConfig({
-
-    // Metadata.
-    pkg: grunt.file.readJSON('package.json'),
-    banner: '/*!\n' +
-            ' * Bootstrap v<%= pkg.version %> (<%= pkg.homepage %>)\n' +
-            ' * Copyright 2011-<%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
-            ' * Licensed under the <%= pkg.license %> license\n' +
-            ' */\n',
-    jqueryCheck: configBridge.config.jqueryCheck.join('\n'),
-    jqueryVersionCheck: configBridge.config.jqueryVersionCheck.join('\n'),
-
-    // Task configuration.
-    clean: {
-      dist: 'dist',
-      docs: 'docs/dist'
-    },
-
-    jshint: {
-      options: {
-        jshintrc: 'js/.jshintrc'
-      },
-      grunt: {
-        options: {
-          jshintrc: 'grunt/.jshintrc'
+        // Task configuration.
+        clean: {
+            dist: ['dist', '*-dist.zip']
         },
-        src: ['Gruntfile.js', 'package.js', 'grunt/*.js']
-      },
-      core: {
-        src: 'js/*.js'
-      },
-      test: {
-        options: {
-          jshintrc: 'js/tests/unit/.jshintrc'
+        jshint: {
+            options: {
+                jshintrc: 'js/.jshintrc'
+            },
+            main: {
+                src: 'js/bootstrap-datepicker.js'
+            },
+            locales: {
+                src: 'js/locales/*.js'
+            },
+            gruntfile: {
+                options: {
+                    jshintrc: 'grunt/.jshintrc'
+                },
+                src: 'Gruntfile.js'
+            }
         },
-        src: 'js/tests/unit/*.js'
-      },
-      assets: {
-        src: ['docs/assets/js/src/*.js', 'docs/assets/js/*.js', '!docs/assets/js/*.min.js']
-      }
-    },
-
-    jscs: {
-      options: {
-        config: 'js/.jscsrc'
-      },
-      grunt: {
-        src: '<%= jshint.grunt.src %>'
-      },
-      core: {
-        src: '<%= jshint.core.src %>'
-      },
-      test: {
-        src: '<%= jshint.test.src %>'
-      },
-      assets: {
-        options: {
-          requireCamelCaseOrUpperCaseIdentifiers: null
+        jscs: {
+            options: {
+                config: 'js/.jscsrc'
+            },
+            main: {
+                src: 'js/bootstrap-datepicker.js'
+            },
+            locales: {
+                src: 'js/locales/*.js'
+            },
+            gruntfile: {
+                src: 'Gruntfile.js'
+            }
         },
-        src: '<%= jshint.assets.src %>'
-      }
-    },
-
-    concat: {
-      options: {
-        banner: '<%= banner %>\n<%= jqueryCheck %>\n<%= jqueryVersionCheck %>',
-        stripBanners: false
-      },
-      bootstrap: {
-        src: [
-          'js/transition.js',
-          'js/alert.js',
-          'js/button.js',
-          'js/carousel.js',
-          'js/collapse.js',
-          'js/dropdown.js',
-          'js/modal.js',
-          'js/tooltip.js',
-          'js/popover.js',
-          'js/scrollspy.js',
-          'js/tab.js',
-          'js/affix.js'
-        ],
-        dest: 'dist/js/<%= pkg.name %>.js'
-      }
-    },
-
-    uglify: {
-      options: {
+        qunit: {
+            main: 'tests/tests.html',
+            timezone: 'tests/timezone.html',
+            options: {
+                console: false
+            }
+        },
+        concat: {
+            options: {
+                stripBanners: true
+            },
+            main: {
+                src: 'js/bootstrap-datepicker.js',
+                dest: 'dist/js/<%= pkg.name %>.js'
+            }
+        },
+        uglify: {
+            options: {
+                preserveComments: 'some'
+            },
+            main: {
+                src: '<%= concat.main.dest %>',
+                dest: 'dist/js/<%= pkg.name %>.min.js'
+            },
+            locales: {
+                files: [{
+                    expand: true,
+                    cwd: 'js/locales/',
+                    src: '*.js',
+                    dest: 'dist/locales/',
+                    rename: function(dest, name){
+                        return dest + name.replace(/\.js$/, '.min.js');
+                    }
+                }]
+            }
+        },
+        less: {
+            options: {
+                sourceMap: true,
+                outputSourceFiles: true
+            },
+            standalone_bs2: {
+                options: {
+                    sourceMapURL: '<%= pkg.name %>.standalone.css.map'
+                },
+                src: 'build/build_standalone.less',
+                dest: 'dist/css/<%= pkg.name %>.standalone.css'
+            },
+            standalone_bs3: {
+                options: {
+                    sourceMapURL: '<%= pkg.name %>3.standalone.css.map'
+                },
+                src: 'build/build_standalone3.less',
+                dest: 'dist/css/<%= pkg.name %>3.standalone.css'
+            },
+            main_bs2: {
+                options: {
+                    sourceMapURL: '<%= pkg.name %>.css.map'
+                },
+                src: 'build/build.less',
+                dest: 'dist/css/<%= pkg.name %>.css'
+            },
+            main_bs3: {
+                options: {
+                    sourceMapURL: '<%= pkg.name %>3.css.map'
+                },
+                src: 'build/build3.less',
+                dest: 'dist/css/<%= pkg.name %>3.css'
+            }
+        },
+        usebanner: {
+            options: {
+                banner: '<%= banner %>'
+            },
+            css: 'dist/css/*.css',
+            js: 'dist/js/**/*.js'
+        },
+        cssmin: {
+            options: {
+                compatibility: 'ie8',
+                keepSpecialComments: '*',
+                advanced: false
+            },
+            main: {
+                files: {
+                    'dist/css/<%= pkg.name %>.min.css': 'dist/css/<%= pkg.name %>.css',
+                    'dist/css/<%= pkg.name %>3.min.css': 'dist/css/<%= pkg.name %>3.css'
+                }
+            },
+            standalone: {
+                files: {
+                    'dist/css/<%= pkg.name %>.standalone.min.css': 'dist/css/<%= pkg.name %>.standalone.css',
+                    'dist/css/<%= pkg.name %>3.standalone.min.css': 'dist/css/<%= pkg.name %>3.standalone.css'
+                }
+            }
+        },
+        csslint: {
+            options: {
+                csslintrc: 'less/.csslintrc'
+            },
+            dist: [
+                'dist/css/bootstrap-datepicker.css',
+                'dist/css/bootstrap-datepicker3.css',
+                'dist/css/bootstrap-datepicker.standalone.css',
+                'dist/css/bootstrap-datepicker3.standalone.css'
+            ]
+        },
         compress: {
-          warnings: false
+            main: {
+                options: {
+                    archive: '<%= pkg.name %>-<%= pkg.version %>-dist.zip',
+                    mode: 'zip',
+                    level: 9,
+                    pretty: true
+                },
+                files: [
+                    {
+                        expand: true,
+                        cwd: 'dist/',
+                        src: '**'
+                    }
+                ]
+            }
         },
-        mangle: true,
-        preserveComments: /^!|@preserve|@license|@cc_on/i
-      },
-      core: {
-        src: '<%= concat.bootstrap.dest %>',
-        dest: 'dist/js/<%= pkg.name %>.min.js'
-      },
-      customize: {
-        src: configBridge.paths.customizerJs,
-        dest: 'docs/assets/js/customize.min.js'
-      },
-      docsJs: {
-        src: configBridge.paths.docsJs,
-        dest: 'docs/assets/js/docs.min.js'
-      }
-    },
-
-    qunit: {
-      options: {
-        inject: 'js/tests/unit/phantom.js'
-      },
-      files: 'js/tests/index.html'
-    },
-
-    less: {
-      compileCore: {
-        options: {
-          strictMath: true,
-          sourceMap: true,
-          outputSourceFiles: true,
-          sourceMapURL: '<%= pkg.name %>.css.map',
-          sourceMapFilename: 'dist/css/<%= pkg.name %>.css.map'
-        },
-        src: 'less/bootstrap.less',
-        dest: 'dist/css/<%= pkg.name %>.css'
-      },
-      compileTheme: {
-        options: {
-          strictMath: true,
-          sourceMap: true,
-          outputSourceFiles: true,
-          sourceMapURL: '<%= pkg.name %>-theme.css.map',
-          sourceMapFilename: 'dist/css/<%= pkg.name %>-theme.css.map'
-        },
-        src: 'less/theme.less',
-        dest: 'dist/css/<%= pkg.name %>-theme.css'
-      }
-    },
-
-    autoprefixer: {
-      options: {
-        browsers: configBridge.config.autoprefixerBrowsers
-      },
-      core: {
-        options: {
-          map: true
-        },
-        src: 'dist/css/<%= pkg.name %>.css'
-      },
-      theme: {
-        options: {
-          map: true
-        },
-        src: 'dist/css/<%= pkg.name %>-theme.css'
-      },
-      docs: {
-        src: ['docs/assets/css/src/docs.css']
-      },
-      examples: {
-        expand: true,
-        cwd: 'docs/examples/',
-        src: ['**/*.css'],
-        dest: 'docs/examples/'
-      }
-    },
-
-    csslint: {
-      options: {
-        csslintrc: 'less/.csslintrc'
-      },
-      dist: [
-        'dist/css/bootstrap.css',
-        'dist/css/bootstrap-theme.css'
-      ],
-      examples: [
-        'docs/examples/**/*.css'
-      ],
-      docs: {
-        options: {
-          ids: false,
-          'overqualified-elements': false
-        },
-        src: 'docs/assets/css/src/docs.css'
-      }
-    },
-
-    cssmin: {
-      options: {
-        // TODO: disable `zeroUnits` optimization once clean-css 3.2 is released
-        //    and then simplify the fix for https://github.com/twbs/bootstrap/issues/14837 accordingly
-        compatibility: 'ie8',
-        keepSpecialComments: '*',
-        sourceMap: true,
-        sourceMapInlineSources: true,
-        advanced: false
-      },
-      minifyCore: {
-        src: 'dist/css/<%= pkg.name %>.css',
-        dest: 'dist/css/<%= pkg.name %>.min.css'
-      },
-      minifyTheme: {
-        src: 'dist/css/<%= pkg.name %>-theme.css',
-        dest: 'dist/css/<%= pkg.name %>-theme.min.css'
-      },
-      docs: {
-        src: [
-          'docs/assets/css/ie10-viewport-bug-workaround.css',
-          'docs/assets/css/src/pygments-manni.css',
-          'docs/assets/css/src/docs.css'
-        ],
-        dest: 'docs/assets/css/docs.min.css'
-      }
-    },
-
-    csscomb: {
-      options: {
-        config: 'less/.csscomb.json'
-      },
-      dist: {
-        expand: true,
-        cwd: 'dist/css/',
-        src: ['*.css', '!*.min.css'],
-        dest: 'dist/css/'
-      },
-      examples: {
-        expand: true,
-        cwd: 'docs/examples/',
-        src: '**/*.css',
-        dest: 'docs/examples/'
-      },
-      docs: {
-        src: 'docs/assets/css/src/docs.css',
-        dest: 'docs/assets/css/src/docs.css'
-      }
-    },
-
-    copy: {
-      fonts: {
-        expand: true,
-        src: 'fonts/**',
-        dest: 'dist/'
-      },
-      docs: {
-        expand: true,
-        cwd: 'dist/',
-        src: [
-          '**/*'
-        ],
-        dest: 'docs/dist/'
-      }
-    },
-
-    connect: {
-      server: {
-        options: {
-          port: 3000,
-          base: '.'
+        'string-replace': {
+            js: {
+                files: [{
+                    src: 'js/bootstrap-datepicker.js',
+                    dest: 'js/bootstrap-datepicker.js'
+                }],
+                options: {
+                    replacements: [{
+                        pattern: /\$(\.fn\.datepicker\.version)\s=\s*("|\')[0-9\.a-z].*("|');/gi,
+                        replacement: "$.fn.datepicker.version = '" + grunt.option('newver') + "';"
+                    }]
+                }
+            },
+            npm: {
+                files: [{
+                    src: 'package.json',
+                    dest: 'package.json'
+                }],
+                options: {
+                    replacements: [{
+                        pattern: /\"version\":\s\"[0-9\.a-z].*",/gi,
+                        replacement: '"version": "' + grunt.option('newver') + '",'
+                    }]
+                }
+            }
         }
-      }
-    },
+    });
 
-    jekyll: {
-      options: {
-        bundleExec: true,
-        config: '_config.yml',
-        incremental: false
-      },
-      docs: {},
-      github: {
-        options: {
-          raw: 'github: true'
-        }
-      }
-    },
+    // These plugins provide necessary tasks.
+    require('load-grunt-tasks')(grunt, {scope: 'devDependencies'});
+    require('time-grunt')(grunt);
 
-    htmlmin: {
-      dist: {
-        options: {
-          collapseBooleanAttributes: true,
-          collapseWhitespace: true,
-          conservativeCollapse: true,
-          decodeEntities: false,
-          minifyCSS: {
-            compatibility: 'ie8',
-            keepSpecialComments: 0
-          },
-          minifyJS: true,
-          minifyURLs: false,
-          processConditionalComments: true,
-          removeAttributeQuotes: true,
-          removeComments: true,
-          removeOptionalAttributes: true,
-          removeOptionalTags: true,
-          removeRedundantAttributes: true,
-          removeScriptTypeAttributes: true,
-          removeStyleLinkTypeAttributes: true,
-          removeTagWhitespace: false,
-          sortAttributes: true,
-          sortClassName: true
-        },
-        expand: true,
-        cwd: '_gh_pages',
-        dest: '_gh_pages',
-        src: [
-          '**/*.html',
-          '!examples/**/*.html'
-        ]
-      }
-    },
+    // JS distribution task.
+    grunt.registerTask('dist-js', ['concat', 'uglify:main', 'uglify:locales', 'usebanner:js']);
 
-    pug: {
-      options: {
-        pretty: true,
-        data: getLessVarsData
-      },
-      customizerVars: {
-        src: 'docs/_pug/customizer-variables.pug',
-        dest: 'docs/_includes/customizer-variables.html'
-      },
-      customizerNav: {
-        src: 'docs/_pug/customizer-nav.pug',
-        dest: 'docs/_includes/nav/customize.html'
-      }
-    },
+    // CSS distribution task.
+    grunt.registerTask('less-compile', 'less');
+    grunt.registerTask('dist-css', ['less-compile', 'cssmin:main', 'cssmin:standalone', 'usebanner:css']);
 
-    htmllint: {
-      options: {
-        ignore: [
-          'Attribute "autocomplete" not allowed on element "button" at this point.',
-          'Attribute "autocomplete" is only allowed when the input type is "color", "date", "datetime", "datetime-local", "email", "hidden", "month", "number", "password", "range", "search", "tel", "text", "time", "url", or "week".',
-          'Element "img" is missing required attribute "src".'
-        ]
-      },
-      src: '_gh_pages/**/*.html'
-    },
+    // Full distribution task.
+    grunt.registerTask('dist', ['clean:dist', 'dist-js', 'dist-css']);
 
-    watch: {
-      src: {
-        files: '<%= jshint.core.src %>',
-        tasks: ['jshint:core', 'qunit', 'concat']
-      },
-      test: {
-        files: '<%= jshint.test.src %>',
-        tasks: ['jshint:test', 'qunit']
-      },
-      less: {
-        files: 'less/**/*.less',
-        tasks: 'less'
-      }
-    },
+    // Code check tasks.
+    grunt.registerTask('lint-js', 'Lint all js files with jshint and jscs', ['jshint', 'jscs']);
+    grunt.registerTask('lint-css', 'Lint all css files', ['dist-css', 'csslint:dist']);
+    grunt.registerTask('qunit-all', 'Run qunit tests', ['qunit:main', 'qunit-timezone']);
+    grunt.registerTask('test', 'Lint files and run unit tests', ['lint-js', /*'lint-css',*/ 'qunit-all']);
 
-    'saucelabs-qunit': {
-      all: {
-        options: {
-          build: process.env.TRAVIS_JOB_ID,
-          throttled: 10,
-          maxRetries: 3,
-          maxPollRetries: 4,
-          urls: ['http://127.0.0.1:3000/js/tests/index.html?hidepassed'],
-          browsers: grunt.file.readYAML('grunt/sauce_browsers.yml')
-        }
-      }
-    },
+    // Version numbering task.
+    // grunt bump-version --newver=X.Y.Z
+    grunt.registerTask('bump-version', 'string-replace');
 
-    exec: {
-      npmUpdate: {
-        command: 'npm update'
-      }
-    },
+    // Docs task.
+    grunt.registerTask('screenshots', 'Rebuilds automated docs screenshots', function(){
+        var phantomjs = require('phantomjs-prebuilt').path;
 
-    compress: {
-      main: {
-        options: {
-          archive: 'bootstrap-<%= pkg.version %>-dist.zip',
-          mode: 'zip',
-          level: 9,
-          pretty: true
-        },
-        files: [
-          {
-            expand: true,
-            cwd: 'dist/',
-            src: ['**'],
-            dest: 'bootstrap-<%= pkg.version %>-dist'
-          }
-        ]
-      }
-    }
+        grunt.file.recurse('docs/_static/screenshots/', function(abspath){
+            grunt.file.delete(abspath);
+        });
 
-  });
+        grunt.file.recurse('docs/_screenshots/', function(abspath, root, subdir, filename){
+            if (!/.html$/.test(filename))
+                return;
+            subdir = subdir || '';
 
+            var outdir = 'docs/_static/screenshots/' + subdir,
+                outfile = outdir + filename.replace(/.html$/, '.png');
 
-  // These plugins provide necessary tasks.
-  require('load-grunt-tasks')(grunt, { scope: 'devDependencies' });
-  require('time-grunt')(grunt);
+            if (!grunt.file.exists(outdir))
+                grunt.file.mkdir(outdir);
 
-  // Docs HTML validation task
-  grunt.registerTask('validate-html', ['jekyll:docs', 'htmllint']);
+            // NOTE: For 'zh-TW' and 'ja' locales install adobe-source-han-sans-jp-fonts (Arch Linux)
+            grunt.util.spawn({
+                cmd: phantomjs,
+                args: ['docs/_screenshots/script/screenshot.js', abspath, outfile]
+            });
+        });
+    });
 
-  var runSubset = function (subset) {
-    return !process.env.TWBS_TEST || process.env.TWBS_TEST === subset;
-  };
-  var isUndefOrNonZero = function (val) {
-    return val === undefined || val !== '0';
-  };
-
-  // Test task.
-  var testSubtasks = [];
-  // Skip core tests if running a different subset of the test suite
-  if (runSubset('core') &&
-      // Skip core tests if this is a Savage build
-      process.env.TRAVIS_REPO_SLUG !== 'twbs-savage/bootstrap') {
-    testSubtasks = testSubtasks.concat(['dist-css', 'dist-js', 'csslint:dist', 'test-js', 'docs']);
-  }
-  // Skip HTML validation if running a different subset of the test suite
-  if (runSubset('validate-html') &&
-      // Skip HTML5 validator on Travis when [skip validator] is in the commit message
-      isUndefOrNonZero(process.env.TWBS_DO_VALIDATOR)) {
-    testSubtasks.push('validate-html');
-  }
-  // Only run Sauce Labs tests if there's a Sauce access key
-  if (typeof process.env.SAUCE_ACCESS_KEY !== 'undefined' &&
-      // Skip Sauce if running a different subset of the test suite
-      runSubset('sauce-js-unit') &&
-      // Skip Sauce on Travis when [skip sauce] is in the commit message
-      isUndefOrNonZero(process.env.TWBS_DO_SAUCE)) {
-    testSubtasks.push('connect');
-    testSubtasks.push('saucelabs-qunit');
-  }
-  grunt.registerTask('test', testSubtasks);
-  grunt.registerTask('test-js', ['jshint:core', 'jshint:test', 'jshint:grunt', 'jscs:core', 'jscs:test', 'jscs:grunt', 'qunit']);
-
-  // JS distribution task.
-  grunt.registerTask('dist-js', ['concat', 'uglify:core', 'commonjs']);
-
-  // CSS distribution task.
-  grunt.registerTask('less-compile', ['less:compileCore', 'less:compileTheme']);
-  grunt.registerTask('dist-css', ['less-compile', 'autoprefixer:core', 'autoprefixer:theme', 'csscomb:dist', 'cssmin:minifyCore', 'cssmin:minifyTheme']);
-
-  // Full distribution task.
-  grunt.registerTask('dist', ['clean:dist', 'dist-css', 'copy:fonts', 'dist-js']);
-
-  // Default task.
-  grunt.registerTask('default', ['clean:dist', 'copy:fonts', 'test']);
-
-  grunt.registerTask('build-glyphicons-data', function () { generateGlyphiconsData.call(this, grunt); });
-
-  // task for building customizer
-  grunt.registerTask('build-customizer', ['build-customizer-html', 'build-raw-files']);
-  grunt.registerTask('build-customizer-html', 'pug');
-  grunt.registerTask('build-raw-files', 'Add scripts/less files to customizer.', function () {
-    var banner = grunt.template.process('<%= banner %>');
-    generateRawFiles(grunt, banner);
-  });
-
-  grunt.registerTask('commonjs', 'Generate CommonJS entrypoint module in dist dir.', function () {
-    var srcFiles = grunt.config.get('concat.bootstrap.src');
-    var destFilepath = 'dist/js/npm.js';
-    generateCommonJSModule(grunt, srcFiles, destFilepath);
-  });
-
-  // Docs task.
-  grunt.registerTask('docs-css', ['autoprefixer:docs', 'autoprefixer:examples', 'csscomb:docs', 'csscomb:examples', 'cssmin:docs']);
-  grunt.registerTask('lint-docs-css', ['csslint:docs', 'csslint:examples']);
-  grunt.registerTask('docs-js', ['uglify:docsJs', 'uglify:customize']);
-  grunt.registerTask('lint-docs-js', ['jshint:assets', 'jscs:assets']);
-  grunt.registerTask('docs', ['docs-css', 'lint-docs-css', 'docs-js', 'lint-docs-js', 'clean:docs', 'copy:docs', 'build-glyphicons-data', 'build-customizer']);
-  grunt.registerTask('docs-github', ['jekyll:github', 'htmlmin']);
-
-  grunt.registerTask('prep-release', ['dist', 'docs', 'docs-github', 'compress']);
+    grunt.registerTask('qunit-timezone', 'Run timezone tests', function(){
+        process.env.TZ = 'Europe/Moscow';
+        grunt.task.run('qunit:timezone');
+    });
 };
